@@ -3,9 +3,11 @@ name: Docker CI
 on:
   push:
     branches: [ "main" ]
+    
     paths-ignore:
       - 'README.md'
-      - '*/.github'
+      - '.github/workflows/**'  
+      - '.gitignore'
     
   
 
