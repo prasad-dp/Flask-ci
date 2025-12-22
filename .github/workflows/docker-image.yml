@@ -1,10 +1,8 @@
-
 name: Docker CI
 
 on:
   push:
     branches: [ "main" ]
-  
 
 jobs:
   build-and-push:
@@ -24,4 +22,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:latest
+          # This creates two tags: one with the version number and one as latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:v${{ github.run_number }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:latest
