@@ -33,6 +33,7 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:v${{ github.run_number }}
             ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:latest
+            
   update-manifest:
     needs: build-and-push # Wait for the Docker image to be ready
     runs-on: ubuntu-latest
