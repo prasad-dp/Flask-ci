@@ -1,4 +1,4 @@
-name: Docker CI
+name: Flak CI/CD
 
 on:
   push:
@@ -33,3 +33,25 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:v${{ github.run_number }}
             ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:latest
+  update-manifest:
+    needs: build-and-push # Wait for the Docker image to be ready
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # Allows pushing back to repo
+
+      - name: Update Image Tag
+        run: |
+          # Replace the image tag in the deployment file
+          # It looks for 'flask-app:v' followed by any numbers and replaces it
+          sed -i "s|image: .*/flask-app:v.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:v${{ github.run_number }}|g" k8s/deployment.yaml
+          
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "{{var.Git_Acc}}"
+          git config --global user.email "{{var.Git_Mail}}"
+          git add k8s/deployment.yaml
+          git commit -m "chore: update image tag to v${{ github.run_number }} [skip ci]"
+          git push
